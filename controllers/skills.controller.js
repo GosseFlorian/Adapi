@@ -26,3 +26,25 @@ export async function getSkillById(req, res) {
     res.status(500).json({ error: "Erreur serveur" });
   }
 }
+
+export async function createSkill(req, res) {
+  try {
+    const { name } = req.body;
+
+    if (!name || typeof name !== "string") {
+      return res
+        .status(400)
+        .json({ error: "Le champ name est requis (string)" });
+    }
+
+    const result = await pool.query(
+      "INSERT INTO skills (name) VALUES ($1) RETURNING *",
+      [name],
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+}
