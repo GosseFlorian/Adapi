@@ -4,6 +4,7 @@ import {
   getThemeById,
   createTheme,
   updateTheme,
+  deleteTheme,
 } from "../controllers/themes.controller.js";
 
 const router = Router();
@@ -11,6 +12,7 @@ const router = Router();
 router.get("/", getAllThemes);
 router.get("/:id", getThemeById);
 router.post("/", createTheme);
-router.patch("/", updateTheme);
+router.patch("/:id", updateTheme);
+router.delete("/:id", deleteTheme);
 
 export default router;

@@ -74,3 +74,19 @@ export async function updateTheme(req, res) {
     res.status(500).json({ error: "Erreur serveur" });
   }
 }
+
+export async function deleteTheme(req, res) {
+  try {
+    const { id } = req.params;
+    const result = await pool.query("DELETE FROM themes WHERE id = $1", [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Theme introuvable" });
+    }
+
+    res.status(204).send();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+}
