@@ -48,3 +48,30 @@ export async function createSkill(req, res) {
     res.status(500).json({ error: "Erreur serveur" });
   }
 }
+
+export async function updateSkill(req, res) {
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+
+    if (!name || typeof name !== "string") {
+      return res
+        .status(400)
+        .json({ error: "Le champ name est requis (string)" });
+    }
+
+    const result = await pool.query(
+      "UPDATE skills SET name = $1 WHERE id = $2 RETURNING *",
+      [name, id],
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Skill introuvable" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+}
