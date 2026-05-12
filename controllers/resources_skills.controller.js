@@ -11,3 +11,30 @@ export async function getAllResourcesSkills(req, res) {
     res.status(500).json({ error: "Erreur serveur" });
   }
 }
+
+export async function createResourceSkill(req, res) {
+  try {
+    const { resource_id, skill_id } = req.body;
+
+    if (
+      !resource_id ||
+      typeof resource_id !== "number" ||
+      !skill_id ||
+      typeof skill_id !== "number"
+    ) {
+      return res.status(400).json({
+        error: "Les champs resource_id et skill_id sont requis (number).",
+      });
+    }
+
+    const result = await pool.query(
+      "INSERT INTO resources_skills (resource_id, skill_id) VALUES ($1, $2) RETURNING *",
+      [resource_id, skill_id],
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+}
