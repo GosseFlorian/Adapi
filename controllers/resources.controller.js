@@ -1,4 +1,5 @@
 import { pool } from "../db/client.js";
+const resourceType = ["guide", "video", "exercise", "projet"];
 
 export async function getAllResources(req, res) {
   try {
@@ -28,9 +29,7 @@ export async function getResourceById(req, res) {
   }
 }
 
-// TODO: faire le POST avec check pour le type (enum)
 export async function createResource(req, res) {
-  const resourceType = ["guide", "video", "exercise", "projet"];
   try {
     const { title, type } = req.body;
 
@@ -62,17 +61,28 @@ export async function createResource(req, res) {
 export async function updateResource(req, res) {
   try {
     const { id } = req.params;
-    const { title } = req.body;
+    const { title, type } = req.body;
 
-    if (!title || typeof title !== "string") {
-      return res
-        .status(400)
-        .json({ error: "Le champ resources est requis (string)" });
+    if (
+      (!title || typeof title !== "string") &&
+      (!type || typeof type !== "string")
+    ) {
+      return res.status(400).json({
+        error: "Au moins un champ valide (title ou type) est requis (string).",
+      });
     }
 
+    if (type && !resourceType.includes(type)) {
+      return res.status(400).json({
+        error:
+          "Le type doit faire partie de la liste (guide, video, exercise, projet)",
+      });
+    }
+
+    // La requête utilise COALESCE pour chaque champ facultatif
     const result = await pool.query(
-      "UPDATE resources SET title = $1 WHERE id = $2 RETURNING *",
-      [title, id],
+      "UPDATE resources SET title = COALESCE($1, title), type = COALESCE($2, type) WHERE id = $3 RETURNING *",
+      [title || null, type || null, id], // On force null si c'est absent
     );
 
     if (result.rowCount === 0) {
