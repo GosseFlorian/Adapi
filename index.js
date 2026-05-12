@@ -13,7 +13,7 @@ app.use(express.json());
 app.use("/skills", skillsRouter);
 app.use("/themes", themesRouter);
 app.use("/resources", resourcesRouter);
-app.use("/resources_skills", resourcesSkillsRouter);
+app.use("/resources-skills", resourcesSkillsRouter);
 
 app.listen(port, () => {
   console.log(`API sur <http://localhost>:${port}`);

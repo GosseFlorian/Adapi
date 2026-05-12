@@ -38,3 +38,22 @@ export async function createResourceSkill(req, res) {
     res.status(500).json({ error: "Erreur serveur" });
   }
 }
+
+export async function deleteResourceSkill(req, res) {
+  try {
+    const { resource_id, skill_id } = req.params;
+    const result = await pool.query(
+      "DELETE FROM resources_skills WHERE resource_id = $1 AND skill_id = $2 RETURNING *",
+      [resource_id, skill_id],
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Liaison introuvable" });
+    }
+
+    res.status(204).send();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+}
