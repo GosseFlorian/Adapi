@@ -29,6 +29,35 @@ export async function getResourceById(req, res) {
 }
 
 // TODO: faire le POST avec check pour le type (enum)
+export async function createResource(req, res) {
+  const resourceType = ["guide", "video", "exercise", "projet"];
+  try {
+    const { title, type } = req.body;
+
+    if (!title || typeof title !== "string") {
+      return res
+        .status(400)
+        .json({ error: "Le champ title est requis (string)" });
+    }
+
+    if (!resourceType.includes(type)) {
+      return res.status(400).json({
+        error:
+          "Le type doit faire partie de la liste (guide, video, exercise, projet)",
+      });
+    }
+
+    const result = await pool.query(
+      "INSERT INTO resources (title, type) VALUES ($1, $2) RETURNING *",
+      [title, type],
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+}
 
 export async function updateResource(req, res) {
   try {

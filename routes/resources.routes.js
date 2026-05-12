@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  createResource,
   deleteResource,
   getAllResources,
   getResourceById,
@@ -12,5 +13,6 @@ router.get("/", getAllResources);
 router.get("/:id", getResourceById);
 router.patch("/:id", updateResource);
 router.delete("/:id", deleteResource);
+router.post("/", createResource);
 
 export default router;
